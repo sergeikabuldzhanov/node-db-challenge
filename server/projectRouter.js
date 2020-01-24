@@ -26,7 +26,7 @@ router.get("/:id", checkProjectIdValid, async (req, res, next) => {
   }
 });
 router.post("/", validateProjectData,async (req, res, next) => {
-  const projectData = req.changes;
+  const projectData = req.body;
   try {
     const newProjectId = await insert(projectData);
     res.status(201).json(newProjectId);
@@ -46,7 +46,7 @@ router.delete("/:id", checkProjectIdValid, async (req, res, next) => {
 router.put("/:id", checkProjectIdValid, validateProjectData, async (req, res, next) => {
   const { id } = req.params;
   try {
-    const updated = await update(req.changes, id);
+    const updated = await update(req.body, id);
     if (updated) {
       res.status(200).json(updated);
     } else {

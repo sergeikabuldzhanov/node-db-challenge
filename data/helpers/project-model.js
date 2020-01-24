@@ -12,14 +12,19 @@ const getById = id => {
   const taskQuery = db("task")
     .where({ project_id: id })
     .then(tasks => tasks.map(task => taskToBody(task))); //same as higher but resolves to an array of mapped tasks
-
-  return Promise.all([projectQuery, taskQuery]).then(([project, tasks]) =>
-    project
-      ? {
-          ...project,
-          tasks
-        }
-      : null
+  const resourceQuery = db("resource as r")
+    .join("project_resource as pr", "r.id", "=", "pr.resource_id")
+    .where({ project_id: id })
+    .select("name");
+  return Promise.all([projectQuery, taskQuery, resourceQuery]).then(
+    ([project, tasks, resources]) =>
+      project
+        ? {
+            ...project,
+            tasks,
+            resources
+          }
+        : null
   ); //returns a promise resolving to a project object with 'tasks' property added.
 };
 const insert = project =>
